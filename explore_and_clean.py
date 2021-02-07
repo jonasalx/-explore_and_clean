@@ -209,6 +209,13 @@ plt.hist(autos.registration_year)
 
 #PARTE 6
 
+#considerando valores iniciales
+fuera = autos[ (autos["registration_year"] < 1900) | (autos["registration_year"] > 2016 )]
+#total de fuera de limites 14748 
+#detalle
+fuera.registration_year.value_counts().sort_values(ascending=False)
+
+#limpiando
 autos[autos["registration_year"] > 2016 ] = np.nan
 """
 count    356780.000000
@@ -223,3 +230,93 @@ max        2016.000000
 
 #es seguro dejar como nan
 #ver si se pueden eliminar por completo
+
+autos.registration_year.value_counts(normalize = True).sort_values(ascending=False)
+
+
+#PARTE 7
+
+list_brand = autos.brand.value_counts(normalize = True).sort_values(ascending=False).head(20)
+# solo aplico un conteo y ordeno descendentemente, las marcas a analizar son las primeras 20
+"""
+volkswagen        0.211634
+bmw               0.115898
+mercedes_benz     0.103787
+opel              0.098398
+audi              0.094281
+ford              0.063324
+renault           0.043263
+peugeot           0.029848
+fiat              0.023625
+seat              0.018388
+skoda             0.016721
+smart             0.015395
+mazda             0.015003
+toyota            0.013854
+citroen           0.013848
+nissan            0.013074
+hyundai           0.010368
+mini              0.010204
+sonstige_autos    0.009386
+volvo             0.009115
+"""
+
+brand_mean = {}
+for b in list_brand.index:
+    brand_mean[b] =  round( autos[ autos["brand"] == b ].price.mean() ,2 )
+
+print(brand_mean)
+
+#grafico
+df = pd.DataFrame([[key, brand_mean[key]] for key in brand_mean.keys()], columns=['brand', 'amount'])
+df.plot( "brand","amount",  kind="scatter" )
+plt .show()
+
+df.sort_values("amount",ascending=False)
+
+
+"""
+18  sonstige_autos  24644.12
+17            mini  10144.93
+4             audi   9515.96
+1              bmw   8885.65
+2    mercedes_benz   8785.91
+10           skoda   6697.20
+0       volkswagen   5939.42
+16         hyundai   5842.70
+19           volvo   5718.82
+13          toyota   5447.91
+15          nissan   5316.48
+9             seat   5009.86
+12           mazda   4532.59
+5             ford   4444.91
+14         citroen   4086.17
+11           smart   3694.98
+7          peugeot   3578.17
+3             opel   3527.65
+8             fiat   3383.03
+6          renault   2865.77
+"""
+
+# el promedio de precios sigue el comun a las marcas, los precios mas altos estan en marcas como mini, audi,bmw
+# mientas que los precios mas bajos estan en marcas como peugeot, fiat, renault entre otras
+
+
+
+#PARTE 8
+#puedo crear las series de la sigueinte forma
+s1 = pd.Series(brand_mean, index= list_brand.index )
+
+# pero creo que este proceso tiene menos pasos
+data_mean = {}
+for b in list_brand.index:
+    data_mean[b] =  [ round( autos[ autos["brand"] == b ].price.mean() ,2 ) ,
+                        round( autos[ autos["brand"] == b ].odometer_km.mean() ,2 ) ]
+    
+df = pd.DataFrame([[key, data_mean[key][0], data_mean[key][1]] for key in data_mean.keys()], columns=['brand', 'amount','km'])
+
+df.km.mean()
+# el promedio de km es  118.222
+# no se ve una relacion entre el precio y el kilometraje, tanto altos y bajos precios tienen kilometraje similar
+
+
