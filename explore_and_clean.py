@@ -123,8 +123,13 @@ autos.odometer_km.value_counts().sort_index(ascending=False).head()
 
 
 #paso a nan valores extremos de price
-autos[autos["price"].between(0, 500)]= np.nan
-autos[autos["price"] > 5000000 ] = np.nan
+#la fila entera
+#autos[autos["price"].between(0, 500)]= np.nan
+#autos[autos["price"] > 5000000 ] = np.nan
+
+#solo el valor en la columna
+autos.loc[autos["price"] <= 500, "price"] = np.nan
+autos.loc[autos["price"] > 5000000, "price"] = np.nan
 
 #depende las operaciones que siguen, pandas no considerar nan para algunas operaciones
 
@@ -165,13 +170,13 @@ autos_hour_14.date_crawled.value_counts().sort_index().describe()
 ################
 # date_crawled #
 ################
-autos.date_created.str[: 10].value_counts().sort_index()
-autos.date_created.str[: 10].value_counts().sort_values(ascending=False).head(50)
-autos.date_created.str[: 10].value_counts().sort_index(ascending=False).head(50)
+autos.ad_created.str[: 10].value_counts().sort_index()
+autos.ad_created.str[: 10].value_counts().sort_values(ascending=False).head(50)
+autos.ad_created.str[: 10].value_counts().sort_index(ascending=False).head(50)
 #se marca un incremendo desde 2016-03-03      415
 
 #podemos graficar la dispersion
-c = autos.date_created.str[: 10].value_counts().sort_index()
+c = autos.ad_created.str[: 10].value_counts().sort_index()
 df = pd.DataFrame([[key, c[key]] for key in c.keys()], columns=['date', 'count'])
 disp = df.plot( "date","count",  kind="scatter" )
 plt.show()
@@ -186,8 +191,11 @@ autos.last_seen.value_counts(normalize = True, dropna = False).sort_index().desc
 
 
 #registration_year
-autos[autos["registration_year"] < 1900 ] = np.nan
-autos[autos["registration_year"] > 2022 ] = np.nan
+#autos[autos["registration_year"] < 1900 ] = np.nan
+#autos[autos["registration_year"] > 2022 ] = np.nan
+
+autos.loc[autos["registration_year"] < 1900, "registration_year"] = np.nan
+autos.loc[autos["registration_year"] > 2022, "registration_year"] = np.nan
 
 autos.registration_year.describe()
 """
@@ -216,7 +224,8 @@ fuera = autos[ (autos["registration_year"] < 1900) | (autos["registration_year"]
 fuera.registration_year.value_counts().sort_values(ascending=False)
 
 #limpiando
-autos[autos["registration_year"] > 2016 ] = np.nan
+#autos[autos["registration_year"] > 2016 ] = np.nan
+autos.loc[autos["registration_year"] > 2016, "registration_year"] = np.nan
 """
 count    356780.000000
 mean       2002.779805
@@ -320,3 +329,39 @@ df.km.mean()
 # no se ve una relacion entre el precio y el kilometraje, tanto altos y bajos precios tienen kilometraje similar
 
 
+#PARTE 9
+
+#recorro para ver datos de columnas en aleman
+for c in autos.columns:
+    print( autos.eval(c).head(10) )
+
+#vehicle_type
+autos.vehicle_type.unique()
+
+autos.loc[autos["vehicle_type"] == "andere", "vehicle_type"] = "other"
+autos.loc[autos["vehicle_type"] == "kleinwagen", "vehicle_type"] = "small car"
+autos.loc[autos["vehicle_type"] == "cabrio", "vehicle_type"] = "convertible"
+
+#gearbox
+autos.gearbox.unique()
+#autos[autos["gearbox"] == "manuell" ] = "manually"
+#autos[autos["gearbox"] == "automatik" ] = "automatic"
+autos.loc[autos["gearbox"] == "manuell", "gearbox"] = "manually"
+autos.loc[autos["gearbox"] == "automatik", "gearbox"] = "automatic"
+
+
+
+#fuel_type
+autos.fuel_type.unique()
+autos.loc[autos["fuel_type"] == "benzin", "fuel_type"] = "gasoline"
+autos.loc[autos["fuel_type"] == "andere", "fuel_type"] = "other"
+autos.loc[autos["fuel_type"] == "elektro", "fuel_type"] = "electro"
+
+
+
+#pasar fecha ad_created a int
+#no siempre funciona ??
+
+#col_created = autos.ad_created
+#for f in col_created.index:
+#    col_created[f] = int( col_created[f][:10].replace("-",""))
