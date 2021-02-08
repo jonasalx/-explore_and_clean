@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import re
 import matplotlib.pyplot as plt
+import time
 
 #PARTE 1
 autos = pd.read_csv("autos.csv/autos.csv")
@@ -18,6 +19,8 @@ for c in nan:
     if nan.get(c) > 0:
         print( c+" => "+ str( nan.get(c) ) )
 
+print("PRIMER ANALISIS, COLUMNAS CON NAN")
+time.sleep(3)
 
 #PARTE 2
 
@@ -27,12 +30,14 @@ def setSnakeCase(list):
         rename[l] = re.sub(r'(?<!^)(?=[A-Z])', '_', l).lower()
     return rename
 
+# luego aplico el metodo rename con el diccionario creado en la funcion
 new_columns = setSnakeCase( autos.columns )
 autos.rename( columns = new_columns, inplace=True )
-#autos.columns
 
-# Cree la funcion setSnakeCase porque automaticamente me hace la transformacion... en cualquier caso, dataframe o lista cualquiera
-# luego aplico el metodo rename con el diccionario creado en la funcion
+print("Cree la funcion setSnakeCase porque automaticamente me hace la transformacion... en cualquier caso, dataframe o lista cualquiera")
+print( autos.columns )
+time.sleep(5)
+
 
 
 #PARTE 3
@@ -74,6 +79,16 @@ for o in list:
 #autos.price.max()
 #2147483647     ???
 
+print("Muestro values_count() por cada columna")
+obs = """
+        month_of_registration, QUE REPRESENTA MES 0 ??
+        nr_of_pictures, TODOS EN 0, se podria eliminar columna
+        year_of_registration, valores no logicos 1000 al 9999
+        price, valores muy bajos e incluso 0
+        price, valores muy altos no logicos (2147483647)
+        """
+print(obs)
+time.sleep(5)
 
 new_columns["kilometer"] = "odometer_km"
 new_columns["year_of_registration"] = "registration_year"
@@ -88,6 +103,9 @@ autos.price.dtypes #int64
 # no seria necesario
 #autos['price'] = autos['price'].astype('int64')
 
+print("Renombro columnas")
+print( autos.columns )
+time.sleep(5)
 
 
 """
@@ -134,7 +152,10 @@ autos.loc[autos["price"] > 5000000, "price"] = np.nan
 #depende las operaciones que siguen, pandas no considerar nan para algunas operaciones
 
 #observacion de valores restantes
-autos.price.describe()
+print("")
+print( autos.price.describe() )
+print("Dejo en NAN price <= 500 y > 5000000")
+time.sleep(5)
 
 
 #PARTE 5
@@ -162,9 +183,10 @@ autos_hour_14 = autos[autos["date_crawled"].between("2016-03-05 14:00:00", "2016
 autos_hour_14.date_crawled.describe()
 autos_hour_14.date_crawled.value_counts().sort_index().describe()
 
-#que tiene de especial esta fecha, por que tiene tantos "rastreos"
-
-
+print("")
+print( "2016-03-05 14:00:00 - 2016-03-05 15:00:00" )
+print("Que tiene de especial esta fecha, por que tiene tantos rastreos ?? ")
+time.sleep(5)
 
 
 ################
@@ -174,6 +196,9 @@ autos.ad_created.str[: 10].value_counts().sort_index()
 autos.ad_created.str[: 10].value_counts().sort_values(ascending=False).head(50)
 autos.ad_created.str[: 10].value_counts().sort_index(ascending=False).head(50)
 #se marca un incremendo desde 2016-03-03      415
+print("Analisando ad_created se marca un incremento desde 2016-03-03      415")
+print("Grafico de dispersion")
+time.sleep(3)
 
 #podemos graficar la dispersion
 c = autos.ad_created.str[: 10].value_counts().sort_index()
@@ -198,7 +223,8 @@ autos.loc[autos["registration_year"] < 1900, "registration_year"] = np.nan
 autos.loc[autos["registration_year"] > 2022, "registration_year"] = np.nan
 
 autos.registration_year.describe()
-"""
+
+obs = """
 count    371346.000000              bajo la cantidad debido a no considerar nan (<1900 & >2022)
 mean       2003.348489              min y max coinciden por las reglas de nan aplicadas
 std           7.776980
@@ -208,6 +234,11 @@ min        1910.000000
 75%        2008.000000
 max        2019.000000
 """
+print("Limpio registration_year < 1900 & > 2022 (primera limpieza)")
+print(obs)
+print("Adicional agrego histograma uqe permite comparar los datos graficamente")
+time.sleep(3)
+
 
 #para ver mejor los minimos, maximos y por que el promedio
 #histograma
